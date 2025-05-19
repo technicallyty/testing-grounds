@@ -14,13 +14,13 @@ jobs:
         with:
           fetch-depth: 0  # Ensures all history and tags are fetched
 
-      - name: Identify modified changelog file
+      - name: Detect changelog
         id: changelog
         run: |
           CHANGED_FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }} HEAD)
           for FILE in $CHANGED_FILES; do
-            LOWER=$(echo "$FILE" | tr '[:upper:]' '[:lower:]')
-            if [[ "$LOWER" == *changelog* ]]; then
+            if echo "$FILE" | grep -i "changelog"; then
+              echo "Found changelog: $FILE"
               echo "COSMOS_CHANGELOG_FILE=$FILE" >> $GITHUB_ENV
               DIFF=$(git diff origin/${{ github.event.pull_request.base.ref }} HEAD -- "$FILE" || true)
               echo "COSMOS_CHANGELOG<<EOF" >> $GITHUB_ENV
