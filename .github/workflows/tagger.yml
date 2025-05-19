@@ -1,0 +1,55 @@
+name: Release on PR Merge
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  release:
+    if: ${{ github.event.pull_request.merged == true }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Ensures all history and tags are fetched
+
+      - name: Identify modified changelog file
+        id: changelog
+        run: |
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }} HEAD)
+          for FILE in $CHANGED_FILES; do
+            LOWER=$(echo "$FILE" | tr '[:upper:]' '[:lower:]')
+            if [[ "$LOWER" == *changelog* ]]; then
+              echo "COSMOS_CHANGELOG_FILE=$FILE" >> $GITHUB_ENV
+              DIFF=$(git diff origin/${{ github.event.pull_request.base.ref }} HEAD -- "$FILE" || true)
+              echo "COSMOS_CHANGELOG<<EOF" >> $GITHUB_ENV
+              echo "$DIFF" >> $GITHUB_ENV
+              echo "EOF" >> $GITHUB_ENV
+              break
+            fi
+          done
+
+      - name: Retrieve all tags
+        run: |
+          echo "COSMOS_TAGS=$(git tag)" >> $GITHUB_ENV
+
+      - name: Set commit SHA
+        run: |
+          echo "COMMIT_SHA=${{ github.event.pull_request.merge_commit_sha }}" >> $GITHUB_ENV
+
+      - name: Set GitHub repository information
+        run: |
+          echo "GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }}" >> $GITHUB_ENV
+          echo "GITHUB_REPOSITORY=${{ github.repository }}" >> $GITHUB_ENV
+
+      - name: Run R2D2 Go Action
+        uses: docker://ghcr.io/technicallyty/r2d2:latest
+        env:
+          COSMOS_CHANGELOG: ${{ env.COSMOS_CHANGELOG }}
+          COSMOS_CHANGELOG_FILE: ${{ env.COSMOS_CHANGELOG_FILE }}
+          COSMOS_TAGS: ${{ env.COSMOS_TAGS }}
+          COMMIT_SHA: ${{ env.COMMIT_SHA }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY_OWNER: ${{ env.GITHUB_REPOSITORY_OWNER }}
+          GITHUB_REPOSITORY: ${{ env.GITHUB_REPOSITORY }}
