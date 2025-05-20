@@ -42,15 +42,15 @@ jobs:
           cat "${{ env.COSMOS_CHANGELOG_FILE }}" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      - name: Retrieve all tags
-        run: |
-          echo "COSMOS_TAGS<<EOF" >> $GITHUB_ENV
-          git tag >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-
       - name: Set commit SHA
         run: |
           echo "COMMIT_SHA=${{ github.event.pull_request.merge_commit_sha }}" >> $GITHUB_ENV
+
+      - name: Retrieve all tags before merge commit
+        run: |
+          echo "COSMOS_TAGS<<EOF" >> $GITHUB_ENV
+          git tag --merged ${{ github.event.pull_request.merge_commit_sha }} --sort=committerdate >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: Set GitHub repository information
         run: |
