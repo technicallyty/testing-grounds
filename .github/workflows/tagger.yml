@@ -5,7 +5,7 @@ on:
     types: [closed]
 
 permissions:
-  contents: write  # 🔥 required for creating tags via API
+  contents: write
 
 jobs:
   release:
