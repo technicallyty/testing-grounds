@@ -43,10 +43,12 @@ jobs:
           echo "EOF" >> $GITHUB_ENV
 
       - name: Retrieve all tags
-        run: echo "COSMOS_TAGS=$(git tag)" >> $GITHUB_ENV
+        run: |
+          echo "COSMOS_TAGS=$(git tag)" >> $GITHUB_ENV
 
       - name: Set commit SHA
-        run: echo "COMMIT_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+        run: |
+          echo "COMMIT_SHA=${{ github.event.pull_request.merge_commit_sha }}" >> $GITHUB_ENV
 
       - name: Set GitHub repository information
         run: |
