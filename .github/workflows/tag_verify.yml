@@ -44,7 +44,9 @@ jobs:
 
       - name: Retrieve all tags
         run: |
-          echo "COSMOS_TAGS=$(git tag)" >> $GITHUB_ENV
+          echo "COSMOS_TAGS<<EOF" >> $GITHUB_ENV
+          git tag >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: Set commit SHA
         run: |
