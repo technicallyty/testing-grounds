@@ -48,7 +48,7 @@ jobs:
           echo "EOF" >> $GITHUB_ENV
 
       - name: R2D2tagger
-        uses: technicallyty/r2d2@v1.0.0-beta.6
+        uses: technicallyty/r2d2@v1.0.0-beta.7
         with:
           changelog: ${{ env.CHANGELOG_CONTENT }}
           changelog-file: ${{ steps.changelog.outputs.CHANGELOG_FILE }}
@@ -56,4 +56,5 @@ jobs:
           pr-number: ${{ github.event.pull_request.number }}
           cosmos-tags: ${{ env.COSMOS_TAGS }}
           commit-sha: ${{ github.event.pull_request.merge_commit_sha }}
+          github-repository: ${{ github.repository }}
           r2d2-comment-only: 'true'
