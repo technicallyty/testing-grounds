@@ -16,13 +16,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-
+          fetch-depth: 0  # Ensures all history and tags are fetched
       - name: Detect changed changelog
         id: changelog
         run: |
-          echo "Comparing ${{ github.event.pull_request.base.sha }} -> ${{ github.event.pull_request.head.sha }}"
-          CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }})
+          echo "Comparing ${{ github.event.pull_request.base.sha }} -> ${{ github.event.pull_request.merge_commit_sha }}"
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.merge_commit_sha }})
 
           echo "Changed files:"
           echo "$CHANGED_FILES"
@@ -42,36 +41,17 @@ jobs:
           cat "${{ env.COSMOS_CHANGELOG_FILE }}" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      - name: Set commit SHA
-        run: |
-          echo "COMMIT_SHA=${{ github.event.pull_request.merge_commit_sha }}" >> $GITHUB_ENV
-
       - name: Retrieve all tags before merge commit
         run: |
           echo "COSMOS_TAGS<<EOF" >> $GITHUB_ENV
           git tag --merged ${{ github.event.pull_request.merge_commit_sha }} --sort=committerdate >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      - name: Set GitHub repository information
-        run: |
-          echo "REPO_OWNER=${{ github.repository_owner }}" >> $GITHUB_ENV
-          REPO_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2)
-          echo "REPO_NAME=$REPO_NAME" >> $GITHUB_ENV
-
-      - name: Set R2D2 label-trigger envs
-        run: |
-          echo "R2D2_COMMENT_ONLY=true" >> $GITHUB_ENV
-          echo "R2D2_PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-
-      - name: Run R2D2 Go Action (comment mode)
-        uses: docker://ghcr.io/technicallyty/r2d2:latest
-        env:
-          COSMOS_CHANGELOG: ${{ env.COSMOS_CHANGELOG }}
-          COSMOS_CHANGELOG_FILE: ${{ env.COSMOS_CHANGELOG_FILE }}
-          COSMOS_TAGS: ${{ env.COSMOS_TAGS }}
-          COMMIT_SHA: ${{ env.COMMIT_SHA }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO_OWNER: ${{ env.REPO_OWNER }}
-          REPO_NAME: ${{ env.REPO_NAME }}
-          R2D2_COMMENT_ONLY: ${{ env.R2D2_COMMENT_ONLY }}
-          R2D2_PR_NUMBER: ${{ env.R2D2_PR_NUMBER }}
+      - name: R2D2tagger
+        uses: technicallyty/r2d2@v1.0.0-beta.2
+        with:
+          changelog: ${{ env.CHANGELOG_CONTENT }}
+          changelog-file: ${{ steps.changelog.outputs.CHANGELOG_FILE }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          comsos-tags: ${{ env.COSMOS_TAGS }}
+          r2d2-comment-only: 'true'
