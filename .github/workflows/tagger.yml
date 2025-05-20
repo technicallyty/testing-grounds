@@ -49,7 +49,7 @@ jobs:
       - name: Set GitHub repository information
         run: |
           echo "GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }}" >> $GITHUB_ENV
-          echo "GITHUB_REPOSITORY=${{ github.repository }}" >> $GITHUB_ENV
+          echo "GITHUB_REPOSITORY=${{ github.event.repository.name }}" >> $GITHUB_ENV
 
       - name: Run R2D2 Go Action
         uses: docker://ghcr.io/technicallyty/r2d2:latest
