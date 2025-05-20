@@ -3,7 +3,7 @@
 
 ## [Unreleased]
 
-## [v1.0.1](https://github.com/cosmos/cosmos-sdk/releases/tag/log/v1.6.0) - 2025-05-19.......
+## [v1.0.1](https://github.com/cosmos/cosmos-sdk/releases/tag/log/v1.6.0) - 2025-05-19........
 
 * [#24720](https://github.com/cosmos/cosmos-sdk/pull/24720) add `VerboseModeLogger` extension interface and `VerboseLevel` configuration option for increasing log verbosity during sensitive operations such as upgrades.
 
