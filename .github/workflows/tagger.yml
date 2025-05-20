@@ -9,14 +9,15 @@ permissions:
 
 jobs:
   release:
-    if: ${{ github.event.pull_request.merged == true }}
+    if: >
+      github.event.pull_request.merged == true &&
+      contains(join(github.event.pull_request.labels.*.name, ','), 'TAGME')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Ensures all history and tags are fetched
-
       - name: Detect changed changelog
         id: changelog
         run: |
@@ -63,5 +64,5 @@ jobs:
           COSMOS_TAGS: ${{ env.COSMOS_TAGS }}
           COMMIT_SHA: ${{ env.COMMIT_SHA }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO_OWNER: ${{ env.REPO_OWNER }}       # ✅ fixed
+          REPO_OWNER: ${{ env.REPO_OWNER }}
           REPO_NAME: ${{ env.REPO_NAME }}
