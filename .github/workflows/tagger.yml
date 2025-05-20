@@ -4,6 +4,9 @@ on:
   pull_request:
     types: [closed]
 
+permissions:
+  contents: write  # 🔥 required for creating tags via API
+
 jobs:
   release:
     if: ${{ github.event.pull_request.merged == true }}
