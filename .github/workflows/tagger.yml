@@ -33,7 +33,10 @@ jobs:
 
       - name: Read changelog file
         id: read_changelog
-        run: echo "CHANGELOG=$(cat ${{ env.COSMOS_CHANGELOG_FILE }})" >> $GITHUB_ENV
+        run: |
+          echo "COSMOS_CHANGELOG<<EOF" >> $GITHUB_ENV
+          cat "${{ env.COSMOS_CHANGELOG_FILE }}" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: Retrieve all tags
         run: |
