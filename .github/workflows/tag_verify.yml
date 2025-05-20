@@ -44,7 +44,7 @@ jobs:
       - name: Retrieve all tags before merge commit
         run: |
           echo "COSMOS_TAGS<<EOF" >> $GITHUB_ENV
-          git tag --merged ${{ github.event.pull_request.merge_commit_sha }} --sort=committerdate >> $GITHUB_ENV
+          git tag --merged ${{ github.event.pull_request.head.sha }} --sort=committerdate >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
       - name: R2D2tagger
