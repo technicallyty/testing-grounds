@@ -58,5 +58,5 @@ jobs:
           commit-sha: ${{ github.event.pull_request.merge_commit_sha }}
           github-repository: ${{ github.repository }}
           r2d2-comment-only: 'true'
-          env:
-            GITHUB_REPOSITORY: ${{ github.repository }}
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
